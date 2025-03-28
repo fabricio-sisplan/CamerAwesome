@@ -91,6 +91,7 @@ data class CameraXState(
         previews = mutableListOf()
         imageCaptures.clear()
         videoCaptures.clear()
+        Log.d("CameraXState", "Updating lifecycle with sensors: $sensors capture mode: ${currentCaptureMode} isMultiCamSupported: ${cameraProvider.isMultiCamSupported()}")
         if (cameraProvider.isMultiCamSupported() && sensors.size > 1) {
             val singleCameraConfigs = mutableListOf<ConcurrentCamera.SingleCameraConfig>()
             var isFirst = true
@@ -128,18 +129,16 @@ data class CameraXState(
 
                 val preview = if (aspectRatio != null) {
                     Preview.Builder().setTargetAspectRatio(aspectRatio!!)
-                        .setCameraSelector(cameraSelector).build()
+                        .build()
                 } else {
-                    Preview.Builder().setCameraSelector(cameraSelector).build()
+                    Preview.Builder().build()
                 }
-                preview.setSurfaceProvider(
-                    surfaceProvider(executor(activity), sensor.deviceId ?: "$index")
-                )
+
                 useCaseGroupBuilder.addUseCase(preview)
                 previews!!.add(preview)
 
                 if (currentCaptureMode == CaptureModes.PHOTO) {
-                    val imageCapture = ImageCapture.Builder().setCameraSelector(cameraSelector)
+                    val imageCapture = ImageCapture.Builder()
 //                .setJpegQuality(100)
                         .apply {
                             //photoSize?.let { setTargetResolution(it) }
@@ -199,9 +198,9 @@ data class CameraXState(
                 previews!!.add(
                     if (aspectRatio != null) {
                         Preview.Builder().setTargetAspectRatio(aspectRatio!!)
-                            .setCameraSelector(cameraSelector).build()
+                            .build()
                     } else {
-                        Preview.Builder().setCameraSelector(cameraSelector).build()
+                        Preview.Builder().build()
                     }
                 )
 
@@ -212,7 +211,7 @@ data class CameraXState(
             }
 
             if (currentCaptureMode == CaptureModes.PHOTO) {
-                val imageCapture = ImageCapture.Builder().setCameraSelector(cameraSelector)
+                val imageCapture = ImageCapture.Builder()
 //                .setJpegQuality(100)
                     .apply {
                         //photoSize?.let { setTargetResolution(it) }
